@@ -4,110 +4,62 @@ import logging
 from homeassistant.core import HomeAssistant, ServiceCall
 
 from .api_client import YouTubeMp3DownloaderAPI
-from .const import (
-    ATTR_CUSTOM_NAME,
-    ATTR_DOWNLOAD_ID,
-    ATTR_URL,
-    DOMAIN,
-    SERVICE_DOWNLOAD,
-    SERVICE_GET_FILES,
-    SERVICE_GET_STATUS,
-)
+from .const import ATTR_CUSTOM_NAME, ATTR_DOWNLOAD_ID, ATTR_URL, DOMAIN, SERVICE_DOWNLOAD, SERVICE_GET_FILES, SERVICE_GET_STATUS
 
 _LOGGER = logging.getLogger(__name__)
 
 
+def get_api(hass: HomeAssistant) -> YouTubeMp3DownloaderAPI:
+    """Get API instance from first config entry."""
+    if not hass.data.get(DOMAIN):
+        raise ValueError("No YouTube MP3 Downloader entries configured")
+    
+    entry_id = list(hass.data[DOMAIN].keys())[0]
+    config = hass.data[DOMAIN][entry_id]
+    
+    return YouTubeMp3DownloaderAPI(
+        config["host"],
+        config["port"],
+        config.get("verify_ssl", False)
+    )
+
+
 async def async_setup_services(hass: HomeAssistant) -> None:
-    """Set up services for YouTube MP3 Downloader (async-safe version)."""
+    """Set up services."""
 
     async def handle_download_video(call: ServiceCall) -> None:
-        """Handle download video service call."""
-        url = call.data.get(ATTR_URL)
-        custom_name = call.data.get(ATTR_CUSTOM_NAME)
-
-        _LOGGER.info(f"Download service called with URL: {url}")
-
-        # Get the first available entry
-        if not hass.data.get(DOMAIN):
-            _LOGGER.error("No YouTube MP3 Downloader entries configured")
-            return
-
+        """Download video service."""
         try:
-            entry_id = list(hass.data[DOMAIN].keys())[0]
-            config = hass.data[DOMAIN][entry_id]
-            
-            api = YouTubeMp3DownloaderAPI(
-                config["host"], config["port"], config.get("verify_ssl", False)
+            api = get_api(hass)
+            await api.async_download_video(
+                call.data.get(ATTR_URL),
+                call.data.get(ATTR_CUSTOM_NAME)
             )
-            result = await api.async_download_video(url, custom_name)
-            _LOGGER.info(f"Download initiated: {result}")
+            _LOGGER.info(f"Download started: {call.data.get(ATTR_URL)}")
         except Exception as e:
-            _LOGGER.error(f"Error starting download: {e}")
+            _LOGGER.error(f"Download error: {e}")
 
     async def handle_get_status(call: ServiceCall) -> None:
-        """Handle get download status service call."""
-        download_id = call.data.get(ATTR_DOWNLOAD_ID)
-
-        _LOGGER.info(f"Get status called for download_id: {download_id}")
-
-        # Get the first available entry
-        if not hass.data.get(DOMAIN):
-            _LOGGER.error("No YouTube MP3 Downloader entries configured")
-            return
-
+        """Get download status service."""
         try:
-            entry_id = list(hass.data[DOMAIN].keys())[0]
-            config = hass.data[DOMAIN][entry_id]
-            
-            api = YouTubeMp3DownloaderAPI(
-                config["host"], config["port"], config.get("verify_ssl", False)
-            )
-            status = await api.async_get_download_status(download_id)
-            _LOGGER.info(f"Download status: {status}")
+            api = get_api(hass)
+            await api.async_get_download_status(call.data.get(ATTR_DOWNLOAD_ID))
+            _LOGGER.info(f"Status check: {call.data.get(ATTR_DOWNLOAD_ID)}")
         except Exception as e:
-            _LOGGER.error(f"Error getting status: {e}")
+            _LOGGER.error(f"Status error: {e}")
 
     async def handle_get_files(call: ServiceCall) -> None:
-        """Handle get files service call."""
-        _LOGGER.info("Get files called")
-
-        # Get the first available entry
-        if not hass.data.get(DOMAIN):
-            _LOGGER.error("No YouTube MP3 Downloader entries configured")
-            return
-
+        """Get files list service."""
         try:
-            entry_id = list(hass.data[DOMAIN].keys())[0]
-            config = hass.data[DOMAIN][entry_id]
-            
-            api = YouTubeMp3DownloaderAPI(
-                config["host"], config["port"], config.get("verify_ssl", False)
-            )
+            api = get_api(hass)
             files = await api.async_get_files()
-            _LOGGER.info(f"Files retrieved: {len(files)} files")
+            _LOGGER.info(f"Retrieved {len(files)} files")
         except Exception as e:
-            _LOGGER.error(f"Error getting files: {e}")
+            _LOGGER.error(f"Files error: {e}")
 
-    # Use async_register which is safe to call from async context
-    hass.services.async_register(
-        DOMAIN,
-        SERVICE_DOWNLOAD,
-        handle_download_video,
-    )
-    _LOGGER.info(f"✅ Service registered: {DOMAIN}.{SERVICE_DOWNLOAD}")
-
-    hass.services.async_register(
-        DOMAIN,
-        SERVICE_GET_STATUS,
-        handle_get_status,
-    )
-    _LOGGER.info(f"✅ Service registered: {DOMAIN}.{SERVICE_GET_STATUS}")
-
-    hass.services.async_register(
-        DOMAIN,
-        SERVICE_GET_FILES,
-        handle_get_files,
-    )
-    _LOGGER.info(f"✅ Service registered: {DOMAIN}.{SERVICE_GET_FILES}")
-
-    _LOGGER.info("✅ All services registered successfully")
+    # Register all services
+    hass.services.async_register(DOMAIN, SERVICE_DOWNLOAD, handle_download_video)
+    hass.services.async_register(DOMAIN, SERVICE_GET_STATUS, handle_get_status)
+    hass.services.async_register(DOMAIN, SERVICE_GET_FILES, handle_get_files)
+    
+    _LOGGER.info("Services registered")
