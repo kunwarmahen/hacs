@@ -31,8 +31,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     }
     
     # Set up services
-    from .services import register_services
-    register_services(hass)
+    from .services import async_setup_services
+    await async_setup_services(hass)
     
     # Forward the setup to the platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
