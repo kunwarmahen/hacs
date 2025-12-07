@@ -8,7 +8,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import discovery
 
 DOMAIN: Final = "youtube_mp3_downloader"
-PLATFORMS = ["service", "sensor"]
+PLATFORMS = ["sensor"]
 
 _LOGGER = logging.getLogger(__name__)
 
