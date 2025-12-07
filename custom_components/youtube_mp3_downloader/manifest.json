@@ -4,7 +4,7 @@
   "codeowners": ["@yourusername"],
   "config_flow": true,
   "documentation": "https://github.com/yourusername/home-assistant-youtube-downloader",
-  "requirements": ["aiohttp==3.9.1"],
+  "requirements": ["aiohttp>=3.8.0"],
   "version": "1.0.0",
   "homeassistant": "2024.1.0"
 }
