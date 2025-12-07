@@ -1,0 +1,10 @@
+{
+  "domain": "youtube_mp3_downloader",
+  "name": "YouTube MP3 Downloader",
+  "codeowners": ["@yourusername"],
+  "config_flow": true,
+  "documentation": "https://github.com/yourusername/home-assistant-youtube-downloader",
+  "requirements": ["aiohttp==3.9.1"],
+  "version": "1.0.0",
+  "homeassistant": "2024.1.0"
+}
