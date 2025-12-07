@@ -1,0 +1,35 @@
+download_video:
+  name: Download YouTube Video
+  description: Download a YouTube video as MP3
+  fields:
+    url:
+      name: YouTube URL
+      description: The URL of the YouTube video to download
+      required: true
+      example: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      selector:
+        text:
+    custom_name:
+      name: Custom Name
+      description: Optional custom name for the downloaded file (without extension)
+      required: false
+      example: "My Song"
+      selector:
+        text:
+
+get_download_status:
+  name: Get Download Status
+  description: Get the status of a download
+  fields:
+    download_id:
+      name: Download ID
+      description: The ID of the download to check
+      required: true
+      example: "abc123def456"
+      selector:
+        text:
+
+get_files:
+  name: Get Files List
+  description: Get a list of all downloaded files
+  fields: {}
