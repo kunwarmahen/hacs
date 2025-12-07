@@ -3,6 +3,7 @@ import logging
 from typing import Any
 
 from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.helpers.config_validation import string
 import voluptuous as vol
 
 from .api_client import YouTubeMp3DownloaderAPI
@@ -23,12 +24,12 @@ _LOGGER = logging.getLogger(__name__)
 
 # Service schemas
 DOWNLOAD_SERVICE_SCHEMA = vol.Schema({
-    vol.Required(ATTR_URL): cv.string,
-    vol.Optional(ATTR_CUSTOM_NAME): cv.string,
+    vol.Required(ATTR_URL): string,
+    vol.Optional(ATTR_CUSTOM_NAME): string,
 })
 
 GET_STATUS_SERVICE_SCHEMA = vol.Schema({
-    vol.Required(ATTR_DOWNLOAD_ID): cv.string,
+    vol.Required(ATTR_DOWNLOAD_ID): string,
 })
 
 
@@ -135,7 +136,3 @@ async def async_setup_services(hass: HomeAssistant) -> None:
     )
 
     _LOGGER.info("Services registered for YouTube MP3 Downloader")
-
-
-# Import validation
-import homeassistant.helpers.config_validation as cv

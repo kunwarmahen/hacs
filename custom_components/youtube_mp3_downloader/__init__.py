@@ -30,8 +30,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         "verify_ssl": entry.data.get("verify_ssl", False),
     }
     
+    # Set up services
+    from .services import async_setup_services
+    await async_setup_services(hass)
+    
     # Forward the setup to the platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    
+    entry.async_on_unload(entry.add_update_listener(async_update_options))
+    
+    return True
     
     entry.async_on_unload(entry.add_update_listener(async_update_options))
     
