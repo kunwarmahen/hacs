@@ -8,7 +8,7 @@ A Home Assistant integration for the YouTube MP3 Downloader service running on y
 - 📊 **Monitoring** - Track download progress and file counts
 - 🔄 **Real-time Updates** - Sensors show active downloads and total files
 - 🎵 **Service Integration** - Call services to download, check status, and list files
-- 🏠 **Local Network** - Works seamlessly with your home network setup
+- 🏠 **Local Network** - Works seamlessly with your home network setup. Follow steps to setup the backend system https://github.com/kunwarmahen/yt-dl-app
 
 ## Installation
 
@@ -16,7 +16,7 @@ A Home Assistant integration for the YouTube MP3 Downloader service running on y
 
 1. Open HACS in Home Assistant
 2. Click the three-dot menu → Custom repositories
-3. Add repository: `https://github.com/yourusername/home-assistant-youtube-downloader`
+3. Add repository: `https://github.com/yourusername/hacs`
 4. Select category: Integration
 5. Search for "YouTube MP3 Downloader" and install
 6. Restart Home Assistant
