@@ -34,13 +34,23 @@ async def async_setup_entry(
     async def async_update_data():
         """Update sensor data."""
         downloads = await api.async_get_downloads()
-        files = await api.async_get_files()
-        
+        files_response = await api.async_get_files()
+
+        # Handle new API format (dict with items/total_files) or legacy format (array)
+        if isinstance(files_response, dict):
+            files = files_response.get("items", [])
+            total_files = files_response.get("total_files", 0)
+        else:
+            # Legacy format: array of files
+            files = files_response if isinstance(files_response, list) else []
+            # Count only MP3 files (not folders)
+            total_files = len([f for f in files if f.get("type") == "file"])
+
         return {
             "downloads": downloads,
             "files": files,
             "download_count": len([d for d in downloads.values() if d.get("status") in ["downloading", "queued"]]),
-            "total_files": len(files),
+            "total_files": total_files,
         }
 
     coordinator = DataUpdateCoordinator(
